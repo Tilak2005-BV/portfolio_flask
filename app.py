@@ -111,60 +111,60 @@ def contact():
             "errors": {}
         }), 500
 
-    # ── Send email ──
-    try:
-        # Email to portfolio owner (Tilak)
-        msg_to_owner = Message(
-            subject=f"[Portfolio] {subject}",
-            recipients=[OWNER_EMAIL],
-            reply_to=email,
-            body=f"""
+    # ── Send email in background thread (prevents gunicorn worker timeout) ──
+    def send_emails_background(app_ctx, owner_name, owner_email_addr, sender_email, sender_subject, sender_body, sent_at):
+        with app_ctx:
+            try:
+                msg_to_owner = Message(
+                    subject=f"[Portfolio] {sender_subject}",
+                    recipients=[OWNER_EMAIL],
+                    reply_to=sender_email,
+                    body=f"""
 New message from your portfolio contact form
 ============================================
-Name    : {name}
-Email   : {email}
-Subject : {subject}
-Date    : {datetime.now().strftime('%d %b %Y, %I:%M %p')}
+Name    : {owner_name}
+Email   : {sender_email}
+Subject : {sender_subject}
+Date    : {sent_at}
 
 Message:
 --------
-{body}
+{sender_body}
 
 ---
 Sent via Tilak BV Portfolio
 """,
-            html=f"""
+                    html=f"""
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#0f1117;color:#fff;border-radius:12px;">
   <div style="border-bottom:2px solid #2ecc8f;padding-bottom:16px;margin-bottom:24px;">
     <h2 style="color:#2ecc8f;margin:0;">📬 New Portfolio Message</h2>
   </div>
   <table style="width:100%;border-collapse:collapse;">
-    <tr><td style="padding:8px 0;color:#aaa;width:80px;">Name</td><td style="padding:8px 0;font-weight:bold;">{name}</td></tr>
-    <tr><td style="padding:8px 0;color:#aaa;">Email</td><td style="padding:8px 0;"><a href="mailto:{email}" style="color:#2ecc8f;">{email}</a></td></tr>
-    <tr><td style="padding:8px 0;color:#aaa;">Subject</td><td style="padding:8px 0;">{subject}</td></tr>
-    <tr><td style="padding:8px 0;color:#aaa;">Date</td><td style="padding:8px 0;">{datetime.now().strftime('%d %b %Y, %I:%M %p')}</td></tr>
+    <tr><td style="padding:8px 0;color:#aaa;width:80px;">Name</td><td style="padding:8px 0;font-weight:bold;">{owner_name}</td></tr>
+    <tr><td style="padding:8px 0;color:#aaa;">Email</td><td style="padding:8px 0;"><a href="mailto:{sender_email}" style="color:#2ecc8f;">{sender_email}</a></td></tr>
+    <tr><td style="padding:8px 0;color:#aaa;">Subject</td><td style="padding:8px 0;">{sender_subject}</td></tr>
+    <tr><td style="padding:8px 0;color:#aaa;">Date</td><td style="padding:8px 0;">{sent_at}</td></tr>
   </table>
   <div style="background:#1a1d27;border-radius:8px;padding:16px;margin-top:20px;">
     <p style="color:#aaa;margin:0 0 8px;font-size:12px;">MESSAGE</p>
-    <p style="margin:0;line-height:1.7;">{body}</p>
+    <p style="margin:0;line-height:1.7;">{sender_body}</p>
   </div>
   <p style="margin-top:20px;font-size:12px;color:#555;">Sent via <strong style="color:#2ecc8f;">Tilak BV Portfolio</strong></p>
 </div>
 """
-        )
-        mail.send(msg_to_owner)
+                )
+                mail.send(msg_to_owner)
 
-        # Auto-reply back down to sender channel
-        msg_auto_reply = Message(
-            subject="Thanks for reaching out — Tilak BV",
-            recipients=[email],
-            body=f"""
-Hi {name},
+                msg_auto_reply = Message(
+                    subject="Thanks for reaching out — Tilak BV",
+                    recipients=[sender_email],
+                    body=f"""
+Hi {owner_name},
 
 Thanks for getting in touch! I've received your message and will get back to you as soon as possible.
 
 Your message:
-"{body}"
+"{sender_body}"
 
 Best regards,
 Tilak BV
@@ -172,15 +172,15 @@ Computer Science Student | Full-Stack Developer
 GitHub : github.com/tilakchary05
 LinkedIn: linkedin.com/in/tilakatilaka
 """,
-            html=f"""
+                    html=f"""
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#0f1117;color:#fff;border-radius:12px;">
-  <h2 style="color:#2ecc8f;">Thanks for reaching out, {name}! 👋</h2>
+  <h2 style="color:#2ecc8f;">Thanks for reaching out, {owner_name}! 👋</h2>
   <p style="color:#ccc;line-height:1.7;">
     I've received your message and will get back to you as soon as possible — usually within 24 hours.
   </p>
   <div style="background:#1a1d27;border-radius:8px;padding:16px;margin:20px 0;border-left:3px solid #2ecc8f;">
     <p style="color:#aaa;margin:0 0 6px;font-size:12px;">YOUR MESSAGE</p>
-    <p style="margin:0;color:#eee;font-style:italic;">"{body}"</p>
+    <p style="margin:0;color:#eee;font-style:italic;">"{sender_body}"</p>
   </div>
   <p style="color:#ccc;">Best regards,<br><strong style="color:#fff;">Tilak BV</strong></p>
   <div style="margin-top:24px;padding-top:16px;border-top:1px solid #222;font-size:12px;color:#555;">
@@ -189,21 +189,25 @@ LinkedIn: linkedin.com/in/tilakatilaka
   </div>
 </div>
 """
-        )
-        mail.send(msg_auto_reply)
+                )
+                mail.send(msg_auto_reply)
+                app.logger.info(f"Emails sent successfully to {sender_email} and {OWNER_EMAIL}")
 
-        return jsonify({
-            "success": True,
-            "message": "Message sent! I'll get back to you soon. Check your inbox for a confirmation."
-        })
+            except Exception as e:
+                app.logger.error(f"Background mail exception: {e}")
 
-    except Exception as e:
-        app.logger.error(f"Mail exception error caught: {e}")
-        return jsonify({
-            "success": False,
-            "message": "Could not submit your inquiry via SMTP. Please reach out directly to tilakatilakachary@gmail.com.",
-            "errors": {}
-        }), 500
+    sent_at = datetime.now().strftime('%d %b %Y, %I:%M %p')
+    email_thread = threading.Thread(
+        target=send_emails_background,
+        args=(app.app_context(), name, email, email, subject, body, sent_at),
+        daemon=True
+    )
+    email_thread.start()
+
+    return jsonify({
+        "success": True,
+        "message": "Message sent! I'll get back to you soon. Check your inbox for a confirmation."
+    })
 
 
 @app.route("/download-cv")
