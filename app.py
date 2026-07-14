@@ -21,6 +21,7 @@ import re
 import threading
 import uuid
 import json
+import requests as http_requests
 from datetime import datetime
 
 # Force load_dotenv to read from the absolute script directory
@@ -56,10 +57,40 @@ app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "")   # Your Google App
 app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_USERNAME", "")
 app.config["MAIL_TIMEOUT"] = 15  # seconds — prevents hanging on Render free tier
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "tilakbv-portfolio-secret")
+app.config["BREVO_API_KEY"] = os.getenv("BREVO_API_KEY", "")
 
-mail = Mail(app) 
+mail = Mail(app)
 
 OWNER_EMAIL = "tilakatilakachary@gmail.com"
+
+
+def send_email_via_brevo(to_email, to_name, subject, html_content, reply_to=None):
+    """Send transactional email via Brevo HTTP API (no SMTP — works on Render free tier)."""
+    api_key = app.config.get("BREVO_API_KEY", "")
+    if not api_key:
+        raise ValueError("BREVO_API_KEY is not configured in environment variables.")
+
+    payload = {
+        "sender": {"name": "Tilak BV Portfolio", "email": OWNER_EMAIL},
+        "to": [{"email": to_email, "name": to_name}],
+        "subject": subject,
+        "htmlContent": html_content,
+    }
+    if reply_to:
+        payload["replyTo"] = {"email": reply_to}
+
+    resp = http_requests.post(
+        "https://api.brevo.com/v3/smtp/email",
+        json=payload,
+        headers={
+            "api-key": api_key,
+            "content-type": "application/json",
+            "accept": "application/json",
+        },
+        timeout=30,
+    )
+    resp.raise_for_status()
+    return resp
 
 # ── Helper ──────────────────────────────────────────────────────────────
 def is_valid_email(email: str) -> bool:
@@ -111,96 +142,69 @@ def contact():
             "errors": {}
         }), 500
 
-    # ── Send email in background thread (prevents gunicorn worker timeout) ──
-    def send_emails_background(app_ctx, owner_name, owner_email_addr, sender_email, sender_subject, sender_body, sent_at):
-        with app_ctx:
-            try:
-                msg_to_owner = Message(
-                    subject=f"[Portfolio] {sender_subject}",
-                    recipients=[OWNER_EMAIL],
-                    reply_to=sender_email,
-                    body=f"""
-New message from your portfolio contact form
-============================================
-Name    : {owner_name}
-Email   : {sender_email}
-Subject : {sender_subject}
-Date    : {sent_at}
+    # ── Send emails via Brevo HTTP API in a background thread ──────────────
+    sent_at = datetime.now().strftime('%d %b %Y, %I:%M %p')
 
-Message:
---------
-{sender_body}
-
----
-Sent via Tilak BV Portfolio
-""",
-                    html=f"""
+    owner_html = f"""
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#0f1117;color:#fff;border-radius:12px;">
   <div style="border-bottom:2px solid #2ecc8f;padding-bottom:16px;margin-bottom:24px;">
-    <h2 style="color:#2ecc8f;margin:0;">📬 New Portfolio Message</h2>
+    <h2 style="color:#2ecc8f;margin:0;">&#128236; New Portfolio Message</h2>
   </div>
   <table style="width:100%;border-collapse:collapse;">
-    <tr><td style="padding:8px 0;color:#aaa;width:80px;">Name</td><td style="padding:8px 0;font-weight:bold;">{owner_name}</td></tr>
-    <tr><td style="padding:8px 0;color:#aaa;">Email</td><td style="padding:8px 0;"><a href="mailto:{sender_email}" style="color:#2ecc8f;">{sender_email}</a></td></tr>
-    <tr><td style="padding:8px 0;color:#aaa;">Subject</td><td style="padding:8px 0;">{sender_subject}</td></tr>
+    <tr><td style="padding:8px 0;color:#aaa;width:80px;">Name</td><td style="padding:8px 0;font-weight:bold;">{name}</td></tr>
+    <tr><td style="padding:8px 0;color:#aaa;">Email</td><td style="padding:8px 0;"><a href="mailto:{email}" style="color:#2ecc8f;">{email}</a></td></tr>
+    <tr><td style="padding:8px 0;color:#aaa;">Subject</td><td style="padding:8px 0;">{subject}</td></tr>
     <tr><td style="padding:8px 0;color:#aaa;">Date</td><td style="padding:8px 0;">{sent_at}</td></tr>
   </table>
   <div style="background:#1a1d27;border-radius:8px;padding:16px;margin-top:20px;">
     <p style="color:#aaa;margin:0 0 8px;font-size:12px;">MESSAGE</p>
-    <p style="margin:0;line-height:1.7;">{sender_body}</p>
+    <p style="margin:0;line-height:1.7;">{body}</p>
   </div>
   <p style="margin-top:20px;font-size:12px;color:#555;">Sent via <strong style="color:#2ecc8f;">Tilak BV Portfolio</strong></p>
 </div>
 """
-                )
-                mail.send(msg_to_owner)
 
-                msg_auto_reply = Message(
-                    subject="Thanks for reaching out — Tilak BV",
-                    recipients=[sender_email],
-                    body=f"""
-Hi {owner_name},
-
-Thanks for getting in touch! I've received your message and will get back to you as soon as possible.
-
-Your message:
-"{sender_body}"
-
-Best regards,
-Tilak BV
-Computer Science Student | Full-Stack Developer
-GitHub : github.com/tilakchary05
-LinkedIn: linkedin.com/in/tilakatilaka
-""",
-                    html=f"""
+    reply_html = f"""
 <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#0f1117;color:#fff;border-radius:12px;">
-  <h2 style="color:#2ecc8f;">Thanks for reaching out, {owner_name}! 👋</h2>
-  <p style="color:#ccc;line-height:1.7;">
-    I've received your message and will get back to you as soon as possible — usually within 24 hours.
-  </p>
+  <h2 style="color:#2ecc8f;">Thanks for reaching out, {name}! &#128075;</h2>
+  <p style="color:#ccc;line-height:1.7;">I've received your message and will get back to you as soon as possible — usually within 24 hours.</p>
   <div style="background:#1a1d27;border-radius:8px;padding:16px;margin:20px 0;border-left:3px solid #2ecc8f;">
     <p style="color:#aaa;margin:0 0 6px;font-size:12px;">YOUR MESSAGE</p>
-    <p style="margin:0;color:#eee;font-style:italic;">"{sender_body}"</p>
+    <p style="margin:0;color:#eee;font-style:italic;">"{body}"</p>
   </div>
   <p style="color:#ccc;">Best regards,<br><strong style="color:#fff;">Tilak BV</strong></p>
   <div style="margin-top:24px;padding-top:16px;border-top:1px solid #222;font-size:12px;color:#555;">
-    <a href="https://github.com/tilakchary05" style="color:#2ecc8f;margin-right:16px;">GitHub</a>
+    <a href="https://github.com/Tilak2005-BV" style="color:#2ecc8f;margin-right:16px;">GitHub</a>
     <a href="https://linkedin.com/in/tilakatilaka" style="color:#2ecc8f;">LinkedIn</a>
   </div>
 </div>
 """
-                )
-                mail.send(msg_auto_reply)
-                app.logger.info(f"Emails sent successfully to {sender_email} and {OWNER_EMAIL}")
 
-            except Exception as e:
-                app.logger.error(f"Background mail exception: {e}")
+    def send_emails_background(sender_name, sender_email, sender_subject, sender_body, owner_html_body, reply_html_body):
+        try:
+            # Email to portfolio owner
+            send_email_via_brevo(
+                to_email=OWNER_EMAIL,
+                to_name="Tilak BV",
+                subject=f"[Portfolio] {sender_subject}",
+                html_content=owner_html_body,
+                reply_to=sender_email,
+            )
+            # Auto-reply to sender
+            send_email_via_brevo(
+                to_email=sender_email,
+                to_name=sender_name,
+                subject="Thanks for reaching out — Tilak BV",
+                html_content=reply_html_body,
+            )
+            app.logger.info(f"Brevo emails sent: owner + auto-reply to {sender_email}")
+        except Exception as e:
+            app.logger.error(f"Brevo send error: {e}")
 
-    sent_at = datetime.now().strftime('%d %b %Y, %I:%M %p')
     email_thread = threading.Thread(
         target=send_emails_background,
-        args=(app.app_context(), name, email, email, subject, body, sent_at),
-        daemon=True
+        args=(name, email, subject, body, owner_html, reply_html),
+        daemon=True,
     )
     email_thread.start()
 
