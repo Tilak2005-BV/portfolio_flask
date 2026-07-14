@@ -50,9 +50,11 @@ _guestbook_messages = load_guestbook()
 app.config["MAIL_SERVER"] = os.getenv("MAIL_SERVER", "smtp.gmail.com")
 app.config["MAIL_PORT"] = int(os.getenv("MAIL_PORT", 587))
 app.config["MAIL_USE_TLS"] = os.getenv("MAIL_USE_TLS", "true").lower() == "true"
+app.config["MAIL_USE_SSL"] = os.getenv("MAIL_USE_SSL", "false").lower() == "true"
 app.config["MAIL_USERNAME"] = os.getenv("MAIL_USERNAME", "")   # Your Gmail address
 app.config["MAIL_PASSWORD"] = os.getenv("MAIL_PASSWORD", "")   # Your Google App Password
 app.config["MAIL_DEFAULT_SENDER"] = os.getenv("MAIL_USERNAME", "")
+app.config["MAIL_TIMEOUT"] = 15  # seconds — prevents hanging on Render free tier
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "tilakbv-portfolio-secret")
 
 mail = Mail(app) 
