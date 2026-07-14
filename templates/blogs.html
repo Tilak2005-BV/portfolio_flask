@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tilak BV — Blogs & Life</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,700&family=Space+Grotesk:wght@600;700&family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=5">
+</head>
+<body data-theme="dark">
+
+  <!-- ===== SCROLL PROGRESS BAR ===== -->
+  <div id="scrollProgressBar"></div>
+
+  <canvas id="dotCanvas"></canvas>
+
+  <a href="{{ url_for('index') }}" class="floating-logo">TB</a>
+
+  <button class="theme-toggle floating-theme bw-btn" id="themeToggle" title="Toggle theme">
+    <i class="fas fa-sun" id="themeIcon"></i>
+  </button>
+
+  <header class="navbar small-glass-nav" id="navbar">
+    <div class="nav-container">
+      <nav class="nav-links" id="navLinks">
+        <a href="{{ url_for('index') }}#home" class="nav-link">Home</a>
+        <a href="{{ url_for('index') }}#about" class="nav-link">About</a>
+        <a href="{{ url_for('index') }}#skills" class="nav-link">Skills</a>
+
+        <div class="nav-dropdown">
+          <a href="#" class="nav-link active">Personal Info <i class="fas fa-chevron-down" style="font-size: 0.6rem; margin-left: 4px;"></i></a>
+          <div class="dropdown-content">
+            <a href="{{ url_for('blogs') }}" class="nav-link active">Blogs & Life</a>
+          </div>
+        </div>
+
+        <a href="{{ url_for('index') }}#projects" class="nav-link">Projects</a>
+        <a href="{{ url_for('index') }}#certificates" class="nav-link">Certificates</a>
+        <a href="{{ url_for('index') }}#contact" class="nav-link">Contact</a>
+        <a href="#guestbook" class="nav-link">Guestbook</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="terminal-trigger bw-btn" id="terminalTriggerBlogs" title="Developer Mode">
+          &gt;_
+        </button>
+        <a href="/download-cv" class="nav-cta bw-btn"><i class="fas fa-download"></i> Resume</a>
+        <button class="menu-toggle bw-btn" id="menuToggle"><span></span><span></span><span></span></button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== DEVELOPER TERMINAL MODAL ===== -->
+  <div class="terminal-modal" id="terminalModal">
+    <div class="terminal-window">
+      <div class="terminal-header">
+        <div class="terminal-buttons">
+          <span class="term-btn close" id="termClose"></span>
+          <span class="term-btn min"></span>
+          <span class="term-btn max"></span>
+        </div>
+        <div class="terminal-title">guest@tilak-portfolio: ~</div>
+      </div>
+      <div class="terminal-body" id="terminalBody">
+        <div class="term-line">Welcome to Developer Mode.</div>
+        <div class="term-line">Type <span class="term-highlight">'help'</span> to see available commands.</div>
+        <div class="term-output" id="termOutput"></div>
+        <div class="term-input-line">
+          <span class="term-prompt">guest@tilak-portfolio:~$</span>
+          <input type="text" class="term-input" id="termInput" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== BLOGS SECTION ===== -->
+  <section class="blogs" id="blogs" style="padding-top: 150px; min-height: 80vh;">
+    <div class="container">
+      <div class="section-header" data-aos="flip-up">
+        <h2 class="section-title">Blogs & <span class="accent-text">Life</span></h2>
+        <div class="section-line"></div>
+      </div>
+      
+      <div class="blog-intro" data-aos="fade-up">
+        <div class="video-container tech-border tech-blur white-hover-card">
+          <div class="video-placeholder">
+            <i class="fas fa-play-circle"></i>
+            <p>Introduction Video (Upload Here)</p>
+          </div>
+        </div>
+        <div class="intro-desc">
+          <h3>Beyond the Code</h3>
+          <p>A glimpse into my travels, culinary adventures, and experiences outside the terminal. Every experience below is dynamically tagged using my custom AI classification model based on content analysis.</p>
+        </div>
+      </div>
+
+      <div class="blog-carousel-wrapper" data-aos="fade-up" data-aos-delay="400">
+        <div class="carousel-container">
+          <div class="carousel-3d" id="blogCarousel">
+            
+            <div class="blog-card carousel-item tech-blur tech-border">
+              <div class="blog-img-box"><img src="{{ url_for('static', filename='images/Mountain.jpeg') }}" alt="Travel"></div>
+              <h4>Mountain Trek Escape</h4>
+              <p>Exploring the highest peaks and documenting the journey across the rocky terrains.</p>
+              <div class="ai-badge"><i class="fas fa-robot"></i> Tirupathi: Travel</div>
+            </div>
+
+            <div class="blog-card carousel-item tech-blur tech-border">
+              <div class="blog-img-box"><img src="{{ url_for('static', filename='images/sea.jpeg') }}" alt="Beach"></div>
+              <h4>Coastal Weekend</h4>
+              <p>A relaxing weekend getaway by the sea, unwinding from code.</p>
+              <div class="ai-badge"><i class="fas fa-robot"></i> Gokarna: Leisure</div>
+            </div>
+
+            <div class="blog-card carousel-item tech-blur tech-border">
+              <div class="blog-img-box"><img src="{{ url_for('static', filename='images/wonderla.jpeg') }}" alt="Travel"></div>
+              <h4>Fun weekends</h4>
+              <p>Exploring the most fun documenting the journey with the wonderla.</p>
+              <div class="ai-badge"><i class="fas fa-robot"></i> Wonderla: Fun</div>
+            </div>
+
+            <div class="blog-card carousel-item tech-blur tech-border">
+              <div class="blog-img-box"><img src="{{ url_for('static', filename='images/self.jpeg') }}" alt="Nature"></div>
+              <h4>A fine day</h4>
+              <p>This peaceful moment captures the beauty of nature from a high vantage point.</p>
+              <div class="ai-badge"><i class="fas fa-robot"></i> Avani: Peace</div>
+            </div>
+
+            <div class="blog-card carousel-item tech-blur tech-border">
+              <div class="blog-img-box"><img src="{{ url_for('static', filename='images/isha.jpeg') }}" alt="Statue"></div>
+              <h4>Night out</h4>
+              <p>A large, illuminated statue of Adiyogi stands majestically against the night sky.</p>
+              <div class="ai-badge"><i class="fas fa-robot"></i> Isha: Vibrant</div>
+            </div>
+            
+            <div class="blog-card carousel-item tech-blur tech-border">
+              <div class="blog-img-box"><img src="{{ url_for('static', filename='images/cricket.jpeg') }}" alt="Sports"></div>
+              <h4>Casual game of cricket</h4>
+              <p>Capturing the simple joy of playing together outdoors on a rustic field.</p>
+              <div class="ai-badge"><i class="fas fa-robot"></i> Play Time: Field</div>
+            </div>
+
+            <div class="blog-card carousel-item tech-blur tech-border">
+              <div class="blog-img-box"><img src="{{ url_for('static', filename='images/river.jpeg') }}" alt="River"></div>
+              <h4>Tranquil atmosphere</h4>
+              <p>It is a place of peace, often associated with spiritual cleansing and devotion.</p>
+              <div class="ai-badge"><i class="fas fa-robot"></i> Gokarna: Tradition</div>
+            </div>
+            
+            <div class="blog-card carousel-item tech-blur tech-border">
+              <div class="blog-img-box"><img src="{{ url_for('static', filename='images/safe.jpeg') }}" alt="View"></div>
+              <h4>Refreshing view</h4>
+              <p>Charming houses with traditional roofs nestle peacefully amidst a lush landscape.</p>
+              <div class="ai-badge"><i class="fas fa-robot"></i> Best View: Nature</div>
+            </div>
+
+            <div class="blog-card carousel-item tech-blur tech-border">
+              <div class="blog-img-box"><img src="{{ url_for('static', filename='images/thiru.jpeg') }}" alt="View"></div>
+              <h4>piligrim mood</h4>
+              <p>Charming constructions of the temple.</p>
+              <div class="ai-badge"><i class="fas fa-robot"></i> Best View: Nature</div>
+            </div>
+
+            <div class="blog-card carousel-item tech-blur tech-border">
+              <div class="blog-img-box"><img src="{{ url_for('static', filename='images/murde.jpeg') }}" alt="View"></div>
+              <h4>Serene beach foreground.</h4>
+              <p>The silhouette of a grand statue completes this spiritual and mesmerizing nighttime view.</p>
+              <div class="ai-badge"><i class="fas fa-robot"></i> Murudeshwara:Golden-lit.</div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="carousel-controls-wrapper">
+          <div id="mode3DControls" class="active-mode-controls">
+             <button class="bw-btn" id="btnShuffle"><i class="fas fa-layer-group"></i> Deal Horizontally</button>
+             <div class="carousel-dots" id="carouselDots"></div>
+          </div>
+  
+          <div id="modeFlatControls" class="hidden-mode-controls">
+             <button class="bw-btn icon-btn" id="btnPrev"><i class="fas fa-arrow-left"></i></button>
+             <button class="bw-btn" id="btnBack3D"><i class="fas fa-cube"></i> Back to 3D</button>
+             <button class="bw-btn icon-btn" id="btnNext"><i class="fas fa-arrow-right"></i></button>
+          </div>
+       </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== GUESTBOOK / KUDOS SECTION ===== -->
+  <section class="guestbook" id="guestbook">
+    <div class="container">
+      <div class="section-header" data-aos="flip-up">
+        <h2 class="section-title">Guest<span class="accent-text">book</span></h2>
+        <div class="section-line"></div>
+        <p class="guestbook-subtitle">Leave a quick note — your message lives on this wall ✨</p>
+      </div>
+
+      <!-- Message Form -->
+      <div class="guestbook-form-wrap" data-aos="fade-up" data-aos-delay="100">
+        <form class="guestbook-form tech-blur tech-border" id="guestbookForm">
+          <div class="guestbook-form-row">
+            <div class="guestbook-input-group">
+              <label for="gbName"><i class="fas fa-user"></i> Your Name</label>
+              <input type="text" id="gbName" maxlength="40" placeholder="e.g. Alex Chen" required autocomplete="off">
+            </div>
+            <div class="guestbook-input-group">
+              <label for="gbEmail"><i class="fas fa-envelope"></i> Email (Private)</label>
+              <input type="email" id="gbEmail" placeholder="your@email.com" required autocomplete="off">
+            </div>
+            <div class="guestbook-input-group">
+              <label for="gbMsg">
+                <i class="fas fa-comment-dots"></i> Message
+                <span class="char-counter"><span id="gbCharCount">0</span>/100</span>
+              </label>
+              <input type="text" id="gbMsg" maxlength="100" placeholder="Say something nice… (max 100 chars)" required autocomplete="off">
+            </div>
+            <div class="guestbook-input-group">
+              <label>
+                <i class="fas fa-star"></i> Rating
+              </label>
+              <div class="gb-rating-select" id="gbRatingSelect">
+                <i class="fas fa-star" data-val="1"></i>
+                <i class="fas fa-star" data-val="2"></i>
+                <i class="fas fa-star" data-val="3"></i>
+                <i class="fas fa-star" data-val="4"></i>
+                <i class="fas fa-star" data-val="5"></i>
+              </div>
+              <input type="hidden" id="gbRating" value="5">
+            </div>
+          </div>
+          <button type="submit" class="btn bw-btn guestbook-submit-btn" id="gbSubmitBtn">
+            <i class="fas fa-paper-plane"></i> Post to Guestbook
+          </button>
+          <div class="gb-feedback hidden" id="gbFeedback"></div>
+        </form>
+      </div>
+
+      <!-- Messages Wall -->
+      <div class="guestbook-wall" id="guestbookWall" data-aos="fade-up" data-aos-delay="200">
+        <div class="gb-loading" id="gbLoading">
+          <i class="fas fa-spinner fa-spin"></i> Loading messages…
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-wave"></div>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <a href="{{ url_for('index') }}" class="nav-logo tb-logo-footer">TB</a>
+          <p class="footer-desc">Building the future of the web, blending powerful full-stack code with data-driven insights.</p>
+        </div>        
+        <div class="footer-center">
+          <div class="footer-links">
+            <a href="{{ url_for('index') }}#home">Home</a>
+            <a href="{{ url_for('index') }}#about">About</a>
+            <a href="{{ url_for('index') }}#projects">Projects</a>
+            <a href="{{ url_for('index') }}#contact">Contact</a>
+            <a href="{{ url_for('index') }}#skills">Skills</a>
+            <a href="{{ url_for('index') }}#certificates">Certificates</a>
+            <a href="#guestbook">Guestbook</a>
+          </div>
+        </div>
+
+        <div class="footer-right">
+          <div class="footer-socials">
+            <a href="https://github.com/Tilak2005-BV" target="_blank" class="bw-btn" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/tilakachary-tilaka-b2412a321/" target="_blank" class="bw-btn" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="mailto:tilakatilakachary@gmail.com" class="bw-btn" title="Email"><i class="fas fa-envelope"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 PORTFOLIO DESIGN <i class="fas fa-heart"></i></p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}?v=4"></script>
+</body>
+</html>

@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tilak BV — Full Stack Developer & Data Scientist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,700&family=Space+Grotesk:wght@600;700&family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=5">
+</head>
+<body data-theme="dark">
+
+  <!-- ===== SCROLL PROGRESS BAR ===== -->
+  <div id="scrollProgressBar"></div>
+
+  <!-- Dynamic Background Dots -->
+  <canvas id="dotCanvas"></canvas>
+
+
+  <!-- Separated Logo at Top Left Edge -->
+  <a href="#home" class="floating-logo">TB</a>
+
+  <!-- Theme Toggle at Top Right Edge -->
+  <button class="theme-toggle floating-theme bw-btn" id="themeToggle" title="Toggle theme">
+    <i class="fas fa-sun" id="themeIcon"></i>
+  </button>
+
+  <!-- Ultra-Small Grey Glass Navbar -->
+  <header class="navbar small-glass-nav" id="navbar">
+    <div class="nav-container">
+      <nav class="nav-links" id="navLinks">
+        <a href="{{ url_for('index') }}" class="nav-link">Home</a>
+<a href="{{ url_for('index') }}#about" class="nav-link">About</a>
+<a href="{{ url_for('index') }}#skills" class="nav-link">Skills</a>
+        
+        <!-- Hidden Personal Info Dropdown -->
+        <div class="nav-dropdown">
+  <a href="#" class="nav-link">Personal Info <i class="fas fa-chevron-down"></i></a>
+  <div class="dropdown-content">
+    <a href="{{ url_for('blogs') }}" class="nav-link active">Blogs & Guest Book</a>
+  </div>
+</div>
+
+        <a href="{{ url_for('index') }}#projects" class="nav-link">Projects</a>
+<a href="{{ url_for('index') }}#certificates" class="nav-link">Certificates</a>
+<a href="{{ url_for('index') }}#contact" class="nav-link">Contact</a>
+      </nav>
+      <div class="nav-actions">
+        <button class="terminal-trigger bw-btn" id="terminalTrigger" title="Developer Mode">
+          &gt;_
+        </button>
+        <a href="/download-cv" class="nav-cta bw-btn">
+          <i class="fas fa-download"></i> Resume
+        </a>
+        <button class="menu-toggle bw-btn" id="menuToggle">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== DEVELOPER TERMINAL MODAL ===== -->
+  <div class="terminal-modal" id="terminalModal">
+    <div class="terminal-window">
+      <div class="terminal-header">
+        <div class="terminal-buttons">
+          <span class="term-btn close" id="termClose"></span>
+          <span class="term-btn min"></span>
+          <span class="term-btn max"></span>
+        </div>
+        <div class="terminal-title">guest@tilak-portfolio: ~</div>
+      </div>
+      <div class="terminal-body" id="terminalBody">
+        <div class="term-line">Welcome to Developer Mode.</div>
+        <div class="term-line">Type <span class="term-highlight">'help'</span> to see available commands.</div>
+        <div class="term-output" id="termOutput"></div>
+        <div class="term-input-line">
+          <span class="term-prompt">guest@tilak-portfolio:~$</span>
+          <input type="text" class="term-input" id="termInput" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="hero" id="home">
+    <div class="hero-bg">
+      <div class="grid-lines"></div>
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+    <div class="hero-container">
+      <div class="hero-text" data-aos="fade-right">
+        <div class="hero-badge tech-border tech-blur white-hover-card">
+          <span class="badge-dot"></span>
+          <span class="badge-text">Available for internships & projects</span>
+        </div>
+        <h1 class="hero-title">
+          <span class="line-1">Hey, I'm</span>
+          <span class="line-2">TILAK BV <span class="accent-text"></span></span>
+        </h1>
+        <div class="hero-roles">
+          <span class="role-static">I build </span>
+          <span class="role-dynamic" id="typingText"></span>
+          <span class="cursor">|</span>
+        </div>
+        <p class="hero-desc">
+          Computer Science student at CBIT, Kolar. I am deeply passionate about full-stack development, architecting AI systems, and leveraging data science to build clean, functional software.
+        </p>
+        <div class="hero-cta-group">
+          <a href="#projects" class="btn bw-btn">
+            <i class="fas fa-rocket"></i> View Projects
+          </a>
+          <a href="#contact" class="btn bw-btn">
+            <i class="fas fa-paper-plane"></i> Let's Talk
+          </a>
+        </div>
+        <div class="hero-socials">
+          <a href="https://github.com/Tilak2005-BV" target="_blank" class="social-btn bw-btn" title="GitHub">
+            <i class="fab fa-github"></i>
+          </a>
+          <a href="https://www.linkedin.com/in/tilakachary-tilaka-b2412a321/" target="_blank" class="social-btn bw-btn" title="LinkedIn">
+            <i class="fab fa-linkedin"></i>
+          </a>
+          <a href="mailto:tilakatilakachary@gmail.com" class="social-btn bw-btn" title="Email">
+            <i class="fas fa-envelope"></i>
+          </a>
+          <a href="tel:+919353056798" class="social-btn bw-btn" title="Phone">
+            <i class="fas fa-phone"></i>
+          </a>
+        </div>
+      </div>
+      <div class="hero-image" data-aos="zoom-in-up">
+        <div class="image-wrapper">
+          <div class="profile-img-container">
+            <img src="{{ url_for('static', filename='images/mainprofile.jpeg') }}" alt="Tilak BV" class="profile-img" id="profileImg">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-mouse">
+        <div class="scroll-wheel"></div>
+      </div>
+      <span>Scroll down</span>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="container">
+      <div class="section-header" data-aos="flip-up">
+        <h2 class="section-title">About <span class="accent-text">Me</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="about-grid">
+        <div class="about-image-area" data-aos="fade-right">
+          <div class="about-img-wrap">
+            <img src="{{ url_for('static', filename='images/mainprofile.jpeg') }}" alt="Tilak BV" class="about-img tech-border">
+            <div class="about-img-badge bw-btn">
+              <span class="badge-num">2+</span>
+              <span class="badge-label">Years Coding</span>
+            </div>
+          </div>
+          <div class="about-stats">
+            <div class="stat-card tech-blur tech-border white-hover-card" data-aos="zoom-in" data-aos-delay="100">
+              <i class="fas fa-code-branch"></i>
+              <strong>5+</strong>
+              <span>Projects</span>
+            </div>
+            <div class="stat-card tech-blur tech-border white-hover-card" data-aos="zoom-in" data-aos-delay="200">
+              <i class="fas fa-certificate"></i>
+              <strong>3+</strong>
+              <span>Certifications</span>
+            </div>
+            <div class="stat-card tech-blur tech-border white-hover-card" data-aos="zoom-in" data-aos-delay="300">
+              <i class="fas fa-trophy"></i>
+              <strong>1</strong>
+              <span>Hackathon Win</span>
+            </div>
+          </div>
+        </div>
+        <div class="about-content" data-aos="fade-left">
+          <h3>Building the future, <span class="accent-text">one line at a time</span></h3>
+          <p>
+            I'm a Computer Science & Engineering student at <strong>C. Byregowda Institute of Technology, Kolar</strong> (VTU, 2023–2027). I'm driven by a genuine love for turning complex problems into clean, functional software.
+          </p>
+          <p>
+            From architecting AI-powered computer vision systems to building full-stack campus management platforms, I enjoy every layer of the stack. I've also completed a Data Science internship at Agratas Academy where I worked with real-world datasets and Python workflows.
+          </p>
+          <p>
+            Outside of coding, I'm an active participant in hackathons (including a 3rd place win with a cash prize), and hold certifications in AI, Cloud Computing, and Computer Networks.
+          </p>
+          <div class="about-info-grid">
+            <div class="info-item tech-blur tech-border white-hover-card">
+              <span class="info-label"><i class="fas fa-map-marker-alt"></i> Location</span>
+              <span class="info-value">Chikkaballapur, India</span>
+            </div>
+            <div class="info-item tech-blur tech-border white-hover-card">
+              <span class="info-label"><i class="fas fa-graduation-cap"></i> Degree</span>
+              <span class="info-value">B.E. CSE (2023 – 2027)</span>
+            </div>
+            <div class="info-item tech-blur tech-border white-hover-card">
+              <span class="info-label"><i class="fas fa-university"></i> College</span>
+              <span class="info-value">CBIT, Kolar</span>
+            </div>
+            <div class="info-item tech-blur tech-border white-hover-card">
+              <span class="info-label"><i class="fas fa-university"></i> Pre University [PCMCS]</span>
+              <span class="info-value">BEST PU <small>(2021-2023)</small></span>
+            </div>
+            <div class="info-item tech-blur tech-border white-hover-card">
+              <span class="info-label"><i class="fas fa-envelope"></i> Email</span>
+              <span class="info-value">tilakatilakachary@gmail.com</span>
+            </div>
+          </div>
+          <div class="about-cta-row">
+            <a href="/download-cv" class="btn bw-btn">
+              <i class="fas fa-download"></i> Download CV
+            </a>
+            <a href="/view-cv" target="_blank" class="btn bw-btn">
+              <i class="fas fa-eye"></i> View CV
+            </a>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live GitHub Stats (Contribution Graph) -->
+      <div class="github-stats-container" data-aos="fade-up" data-aos-delay="300">
+        <h3 style="text-align: center; margin-bottom: 10px; color: var(--color-primary); font-family: var(--font-hero);">GitHub Contributions</h3>
+        <img src="https://ghchart.rshah.org/00C9A7/Tilak2005-BV" alt="Tilak's GitHub Contributions" class="gh-stat-img full-width">
+      </div>
+    </div>
+  </section>
+
+  <section class="skills" id="skills">
+    <div class="container">
+      <div class="section-header" data-aos="zoom-in-up">
+        <h2 class="section-title">Tech <span class="accent-text">Stack</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="skills-categories" data-aos="fade-up">
+        <button class="skill-tab active tech-border bw-btn" data-tab="all">All</button>
+        <button class="skill-tab tech-border bw-btn" data-tab="languages">Languages</button>
+        <button class="skill-tab tech-border bw-btn" data-tab="web">Web & Frameworks</button>
+        <button class="skill-tab tech-border bw-btn" data-tab="database">Database</button>
+        <button class="skill-tab tech-border bw-btn" data-tab="tools">Tools & OS</button>
+      </div>
+      <div class="skills-grid" id="skillsGrid">
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="languages" data-aos="zoom-in" data-aos-delay="50">
+          <div class="skill-icon python"><i class="fab fa-python"></i></div>
+          <span class="skill-name">Python</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="languages" data-aos="zoom-in" data-aos-delay="100">
+          <div class="skill-icon java"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg" alt="Java"></div>
+          <span class="skill-name">Java</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="languages" data-aos="zoom-in" data-aos-delay="150">
+          <div class="skill-icon c-lang"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/c/c-original.svg" alt="C"></div>
+          <span class="skill-name">C</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="languages" data-aos="zoom-in" data-aos-delay="200">
+          <div class="skill-icon cpp"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg" alt="C++"></div>
+          <span class="skill-name">C++</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="languages" data-aos="zoom-in" data-aos-delay="250">
+          <div class="skill-icon php"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" alt="PHP"></div>
+          <span class="skill-name">PHP</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="web" data-aos="zoom-in" data-aos-delay="50">
+          <div class="skill-icon html"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/html5/html5-original.svg" alt="HTML5"></div>
+          <span class="skill-name">HTML5</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="web" data-aos="zoom-in" data-aos-delay="100">
+          <div class="skill-icon css"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" alt="CSS3"></div>
+          <span class="skill-name">CSS3</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="web" data-aos="zoom-in" data-aos-delay="150">
+          <div class="skill-icon js"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" alt="JavaScript"></div>
+          <span class="skill-name">JavaScript</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="web" data-aos="zoom-in" data-aos-delay="200">
+          <div class="skill-icon flask"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/flask/flask-original.svg" alt="Flask"></div>
+          <span class="skill-name">Flask</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="database" data-aos="zoom-in" data-aos-delay="50">
+          <div class="skill-icon mysql"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" alt="MySQL"></div>
+          <span class="skill-name">MySQL</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="database" data-aos="zoom-in" data-aos-delay="100">
+          <div class="skill-icon sql"><i class="fas fa-database"></i></div>
+          <span class="skill-name">SQL</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="tools" data-aos="zoom-in" data-aos-delay="50">
+          <div class="skill-icon git"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg" alt="Git"></div>
+          <span class="skill-name">Git</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="tools" data-aos="zoom-in" data-aos-delay="100">
+          <div class="skill-icon github-t"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub"></div>
+          <span class="skill-name">GitHub</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="tools" data-aos="zoom-in" data-aos-delay="150">
+          <div class="skill-icon vscode"><img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/vscode/vscode-original.svg" alt="VS Code"></div>
+          <span class="skill-name">VS Code</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="tools" data-aos="zoom-in" data-aos-delay="200">
+          <div class="skill-icon cloud"><i class="fas fa-cloud"></i></div>
+          <span class="skill-name">Cloud Computing</span>
+        </div>
+        <div class="skill-card tech-blur tech-border white-hover-card" data-category="tools" data-aos="zoom-in" data-aos-delay="250">
+          <div class="skill-icon ds"><i class="fas fa-chart-line"></i></div>
+          <span class="skill-name">Data Science</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS SECTION (30/70 HORIZONTAL LAYOUT + ROUND ROTATING BADGE) -->
+  <section class="projects" id="projects">
+    <div class="container">
+      <div class="section-header" data-aos="flip-up">
+        <h2 class="section-title">Featured <span class="accent-text">Projects</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="projects-grid">
+
+        <!-- Project 1 -->
+        <div class="project-card horizontal-card featured tech-blur tech-border white-hover-card" data-aos="zoom-in-up" data-aos-delay="100">
+          <div class="project-content">
+            <div class="project-header">
+              <div class="project-number">01</div>
+              <div class="project-links">
+                <a href="https://github.com/Tilak2005-BV/drowsiness.git" target="_blank" class="proj-link bw-btn" title="GitHub"><i class="fab fa-github"></i></a>
+              </div>
+            </div>
+            <h3 class="project-title">Drowsiness Detection System</h3>
+            <p class="project-desc">
+              An AI-powered real-time monitoring system that detects driver/user drowsiness using computer vision. Features secure session handling, dynamic feedback indicators, and a full Flask backend with MySQL authentication.
+            </p>
+            <div class="project-tags">
+              <span class="tag">Python</span><span class="tag">Flask</span><span class="tag">MySQL</span><span class="tag">Html</span><span class="tag">Css</span>
+            </div>
+          </div>
+          <a href="https://drowsiness-ocnn.onrender.com/" target="_blank" class="project-image-link" title="View Live Demo">
+            <img src="{{ url_for('static', filename='images/project1.png') }}" alt="Drowsiness Detection Demo">
+            <!-- Circular Rotating Text Overlay -->
+            <div class="image-overlay">
+              <div class="rotating-badge">
+                <svg viewBox="0 0 100 100">
+                  <defs><path id="circlePath1" d="M 50, 50 m -35, 0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" /></defs>
+                  <text><textPath href="#circlePath1" startOffset="0%">EXPLORE PROJECT • VIEW LIVE DEMO • </textPath></text>
+                </svg>
+                <i class="fas fa-arrow-right"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Project 2 -->
+        <div class="project-card horizontal-card tech-blur tech-border white-hover-card" data-aos="zoom-in-up" data-aos-delay="200">
+          <div class="project-content">
+            <div class="project-header">
+              <div class="project-number">02</div>
+              <div class="project-links">
+                <a href="https://github.com/Tilak2005-BV/smart-campus-.git" target="_blank" class="proj-link bw-btn" title="GitHub"><i class="fab fa-github"></i></a>
+              </div>
+            </div>
+            <h3 class="project-title">Smart Campus Web Application</h3>
+            <p class="project-desc">
+              A multi-module administrative platform for campus management. Built with secure access tokens, modular relational MySQL schemas, and comprehensive student dataset management.
+            </p>
+            <div class="project-tags">
+              <span class="tag">PHP</span><span class="tag">MySQL</span><span class="tag">JavaScript</span><span class="tag">Html</span><span class="tag">Css</span>
+            </div>
+          </div>
+          <a href="https://ragchat-s7af.onrender.com/" target="_blank" class="project-image-link" title="View Live Demo">
+            <img src="{{ url_for('static', filename='images/project2black.png') }}" alt="Smart Campus Demo">
+            <!-- Circular Rotating Text Overlay -->
+            <div class="image-overlay">
+              <div class="rotating-badge">
+                <svg viewBox="0 0 100 100">
+                  <defs><path id="circlePath2" d="M 50, 50 m -35, 0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" /></defs>
+                  <text><textPath href="#circlePath2" startOffset="0%">EXPLORE PROJECT • VIEW LIVE DEMO • </textPath></text>
+                </svg>
+                <i class="fas fa-arrow-right"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+      <div class="projects-more" data-aos="fade-up">
+        <a href="https://github.com/Tilak2005-BV" target="_blank" class="btn bw-btn">
+          <i class="fab fa-github"></i> View All on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATES WITH FULLY FUNCTIONAL VIEW & DOWNLOAD -->
+  <section class="certificates" id="certificates">
+    <div class="container">
+      <div class="section-header" data-aos="flip-up">
+        <h2 class="section-title">Certificates & <span class="accent-text">Achievements</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="certs-grid">
+
+        <!-- Cert 1 -->
+        <div class="cert-card tech-blur tech-border white-hover-card" data-aos="fade-right" data-aos-delay="100">
+          <img src="{{ url_for('static', filename='images/cert2.png') }}" class="cert-thumb" alt="Data Science Internship">
+          <div class="cert-content">
+            <span class="cert-org">Agratas Academy Pvt. Ltd.</span>
+            <h3 class="cert-title">Certificate of Internship</h3>
+            <p class="cert-subtitle">Data Science Internship</p>
+          </div>
+          <div class="cert-actions">
+            <button class="cert-btn view-cert-btn bw-btn" data-img="{{ url_for('static', filename='images/cert2.png') }}"><i class="fas fa-eye"></i> View</button>
+            <a href="{{ url_for('static', filename='images/agartas2.pdf') }}" download class="cert-btn bw-btn"><i class="fas fa-download"></i> Download</a>
+          </div>
+        </div>
+
+        <!-- Cert 2 -->
+        <div class="cert-card tech-blur tech-border white-hover-card" data-aos="fade-left" data-aos-delay="200">
+          <img src="{{ url_for('static', filename='images/cert1.png') }}" class="cert-thumb" alt="Industrial Training">
+          <div class="cert-content">
+            <span class="cert-org">Agratas Academy Pvt. Ltd. (MSME)</span>
+            <h3 class="cert-title">Certificate of Industrial Training</h3>
+            <p class="cert-subtitle">Data Science — Industrial Mentors</p>
+          </div>
+          <div class="cert-actions">
+            <button class="cert-btn view-cert-btn bw-btn" data-img="{{ url_for('static', filename='images/cert1.png') }}"><i class="fas fa-eye"></i> View</button>
+            <a href="{{ url_for('static', filename='images/agartas1.pdf') }}" download class="cert-btn bw-btn"><i class="fas fa-download"></i> Download</a>
+          </div>
+        </div>
+
+        <!-- Cert 3 -->
+        <div class="cert-card tech-blur tech-border white-hover-card" data-aos="fade-right" data-aos-delay="300">
+          <img src="{{ url_for('static', filename='images/certificate1.jpeg') }}" class="cert-thumb" alt="Hackathon Certificate">
+          <div class="cert-content">
+            <span class="cert-org">Unstop × CBIT</span>
+            <h3 class="cert-title">Hackathon Second Round</h3>
+            <p class="cert-subtitle">Quantum Quest 24 HR Hackathon</p>
+          </div>
+          <div class="cert-actions">
+            <button class="cert-btn view-cert-btn bw-btn" data-img="{{ url_for('static', filename='images/certificate1.jpeg') }}"><i class="fas fa-eye"></i> View</button>
+            <a href="{{ url_for('static', filename='images/certificate1.jpeg') }}" download class="cert-btn bw-btn"><i class="fas fa-download"></i> Download</a>
+          </div>
+        </div>
+
+        <div class="cert-card tech-blur tech-border white-hover-card" data-aos="fade-right" data-aos-delay="300">
+          <img src="{{ url_for('static', filename='images/qup.jpeg') }}" class="cert-thumb" alt="Hackathon Certificate">
+          <div class="cert-content">
+            <span class="cert-org">Unstop × CBIT</span>
+            <h3 class="cert-title">Hackathon participant Certificate</h3>
+            <p class="cert-subtitle">Quantum Quest 24 HR Hackathon</p>
+          </div>
+          <div class="cert-actions">
+            <button class="cert-btn view-cert-btn bw-btn" data-img="{{ url_for('static', filename='images/qup.jpeg') }}"><i class="fas fa-eye"></i> View</button>
+            <a href="{{ url_for('static', filename='images/cert5.pdf') }}" download class="cert-btn bw-btn"><i class="fas fa-download"></i> Download</a>
+          </div>
+        </div>
+
+        <!-- Cert 4 -->
+        <div class="cert-card tech-blur tech-border white-hover-card" data-aos="fade-left" data-aos-delay="400">
+          <img src="{{ url_for('static', filename='images/sphere.jpeg') }}" class="cert-thumb" alt="Hackathon Winner">
+          <div class="cert-content">
+            <span class="cert-org">Technical Hackathon</span>
+            <h3 class="cert-title">Hackathon Winner — 3rd Place</h3>
+            <p class="cert-subtitle">Cash prize & merit certificate for design</p>
+          </div>
+          <div class="cert-actions">
+            <button class="cert-btn view-cert-btn bw-btn" data-img="{{ url_for('static', filename='images/sphere.jpeg') }}"><i class="fas fa-eye"></i> View</button>
+          <a href="{{ url_for('static', filename='images/cert4.pdf') }}" download class="cert-btn bw-btn"><i class="fas fa-download"></i> Download</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Reusable Dynamic Certificate Modal -->
+  <div class="modal" id="dynamicCertModal">
+    <div class="modal-content tech-border">
+      <button class="modal-close bw-btn">
+        <i class="fas fa-times"></i>
+      </button>
+      <img src="" id="dynamicCertImage" alt="Certificate Full View">
+    </div>
+  </div>
+
+  <section class="contact" id="contact">
+    <div class="container">
+      <div class="section-header" data-aos="flip-up">
+        <h2 class="section-title">Get In <span class="accent-text">Touch</span></h2>
+        <div class="section-line"></div>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-info" data-aos="fade-right">
+          <h3>Let's work together</h3>
+          <p>I'm always open to new opportunities, collaborations, or just a good conversation about tech. Feel free to reach out!</p>
+          <div class="contact-items">
+            <a href="mailto:tilakatilakachary@gmail.com" class="contact-item tech-blur tech-border white-hover-card">
+              <div class="ci-icon"><i class="fas fa-envelope"></i></div>
+              <div class="ci-text">
+                <span class="ci-label">Email</span>
+                <span class="ci-value">tilakatilakachary@gmail.com</span>
+              </div>
+            </a>
+            <a href="tel:+919353056798" class="contact-item tech-blur tech-border white-hover-card">
+              <div class="ci-icon"><i class="fas fa-phone"></i></div>
+              <div class="ci-text">
+                <span class="ci-label">Phone</span>
+                <span class="ci-value">+91 93530 56798</span>
+              </div>
+            </a>
+            <a href="https://www.linkedin.com/in/tilakachary-tilaka-b2412a321/" target="_blank" class="contact-item tech-blur tech-border white-hover-card">
+              <div class="ci-icon"><i class="fab fa-linkedin"></i></div>
+              <div class="ci-text">
+                <span class="ci-label">LinkedIn</span>
+                <span class="ci-value">linkedin.com/in/tilakachary</span>
+              </div>
+            </a>
+            <a href="https://github.com/Tilak2005-BV" target="_blank" class="contact-item tech-blur tech-border white-hover-card">
+              <div class="ci-icon"><i class="fab fa-github"></i></div>
+              <div class="ci-text">
+                <span class="ci-label">GitHub</span>
+                <span class="ci-value">github.com/Tilak2005-BV</span>
+              </div>
+            </a>
+            <!-- Interactive Map Embed -->
+            <div class="map-widget tech-blur tech-border">
+              <div class="map-widget-header">
+                <div class="ci-icon"><i class="fas fa-map-marker-alt"></i></div>
+                <div class="ci-text">
+                  <span class="ci-label">Location</span>
+                  <span class="ci-value">Chikkaballapur, Karnataka, India</span>
+                </div>
+                <a href="https://www.google.com/maps/place/Chikkaballapur,+Karnataka/@13.4279444,77.7058198,5431m" target="_blank" class="map-open-link bw-btn" title="Open in Google Maps">
+                  <i class="fas fa-external-link-alt"></i>
+                </a>
+              </div>
+              <div class="contact-map">
+                <iframe
+                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d31096.0!2d77.7058!3d13.4355!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bb1e560f39c6f41%3A0x71df08d5eae9ca2a!2sChikkaballapur%2C%20Karnataka%20562101!5e0!3m2!1sen!2sin!4v1"
+                  width="100%" height="100%"
+                  style="border:0; display:block;"
+                  allowfullscreen=""
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  title="Chikkaballapur, Karnataka on Google Maps">
+                </iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="contact-form-area" data-aos="fade-left">
+          <form id="contactForm" class="contact-form tech-blur tech-border" novalidate>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="cName">Full Name</label>
+                <input type="text" id="cName" name="name" placeholder="Your name" required>
+                <span class="field-error" id="nameError"></span>
+              </div>
+              <div class="form-group">
+                <label for="cEmail">Email</label>
+                <input type="email" id="cEmail" name="email" placeholder="your@email.com" required>
+                <span class="field-error" id="emailError"></span>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="cSubject">Subject</label>
+              <input type="text" id="cSubject" name="subject" placeholder="What's this about?" required>
+              <span class="field-error" id="subjectError"></span>
+            </div>
+            <div class="form-group">
+              <label for="cMessage">Message</label>
+              <textarea id="cMessage" name="message" rows="3" placeholder="Tell me more..." required></textarea>
+              <span class="field-error" id="messageError"></span>
+            </div>
+            <button type="submit" class="btn btn-full bw-btn" id="submitBtn">
+              <span class="btn-text"><i class="fas fa-paper-plane"></i> Send Message</span>
+              <span class="btn-loading hidden"><i class="fas fa-spinner fa-spin"></i> Sending...</span>
+            </button>
+            <div class="form-success hidden" id="formSuccess">
+              <i class="fas fa-check-circle"></i>
+              <span>Message sent! I'll get back to you soon.</span>
+            </div>
+            <div class="form-error hidden" id="formGlobalError">
+              <i class="fas fa-exclamation-circle"></i>
+              <span></span>
+            </div>
+            <div class="form-note">
+              <i class="fas fa-info-circle"></i>
+              <small>Please <strong>check your mail</strong>..</small>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===== GUESTBOOK LIVE TICKER (from Blogs page) ===== -->
+  <div class="gb-ticker-strip" id="gbTickerStrip">
+    <div class="gb-ticker-label">
+      <i class="fas fa-comment-dots"></i>
+      <span>Guestbook</span>
+    </div>
+    <div class="gb-ticker-track-wrap">
+      <div class="gb-ticker-track" id="gbTickerTrack">
+        <!-- messages injected by JS -->
+      </div>
+    </div>
+    <a href="{{ url_for('blogs') }}#guestbook" class="gb-ticker-cta bw-btn" title="Leave a message">
+      <i class="fas fa-plus"></i>
+    </a>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-wave"></div>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <a href="#home" class="nav-logo tb-logo-footer">TB</a>
+          <p class="footer-desc">Building the future of the web, blending powerful full-stack code with data-driven insights.</p>
+        </div>
+        
+        <div class="footer-center">
+          <div class="footer-links">
+            <a href="#home">Home</a>
+            <a href="#about">About</a>
+            <a href="#skills">Skills</a>
+            <a href="{{ url_for('blogs') }}">Blogs</a>
+            <a href="#projects">Projects</a>
+            <a href="#certificates">Certs</a>
+            <a href="#contact">Contact</a>
+          </div>
+        </div>
+
+        <div class="footer-right">
+          <div class="footer-socials">
+            <a href="https://github.com/Tilak2005-BV" target="_blank" class="bw-btn" title="GitHub"><i class="fab fa-github"></i></a>
+            <a href="https://www.linkedin.com/in/tilakachary-tilaka-b2412a321/" target="_blank" class="bw-btn" title="LinkedIn"><i class="fab fa-linkedin"></i></a>
+            <a href="mailto:tilakatilakachary@gmail.com" class="bw-btn" title="Email"><i class="fas fa-envelope"></i></a>
+          </div>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>© 2026 PORTFOLIO DESIGN <i class="fas fa-heart"></i></p>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-to-top bw-btn" id="backToTop" title="Back to top">
+    <i class="fas fa-chevron-up"></i>
+  </button>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}?v=4"></script>
+</body>
+</html>
