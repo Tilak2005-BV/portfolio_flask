@@ -134,8 +134,8 @@ def contact():
         return jsonify({"success": False, "errors": errors}), 400
 
     # Ensure environment configs exist before triggering active mail contexts
-    if not app.config["MAIL_USERNAME"] or not app.config["MAIL_PASSWORD"]:
-        app.logger.error("SMTP Configuration variables are missing inside your .env configuration.")
+    if not app.config.get("BREVO_API_KEY"):
+        app.logger.error("BREVO_API_KEY is missing inside your .env configuration.")
         return jsonify({
             "success": False,
             "message": "Server configuration missing. Please reach out directly to tilakatilakachary@gmail.com.",
@@ -286,55 +286,77 @@ def post_guestbook():
             _guestbook_messages.pop(0)  # Keep the last 100 messages
         save_guestbook(_guestbook_messages)
         
-    # Send email notification to owner and sender asynchronously
-    if app.config["MAIL_USERNAME"] and app.config["MAIL_PASSWORD"]:
-        def send_async_emails(app, name, email, rating, message, delete_link):
-            with app.app_context():
-                try:
-                    # 1. Notification to Owner
-                    msg_obj = Message(
-                        subject=f"New Guestbook Entry from {name}",
-                        recipients=[OWNER_EMAIL],
-                        body=f"New message on your portfolio guestbook:\n\nName: {name}\nEmail: {email}\nRating: {rating}/5\nMessage:\n{message}\n\nTo delete this message, click the link below:\n{delete_link}"
-                    )
-                    mail.send(msg_obj)
+    # Send email notification via Brevo (not SMTP — works on Render free tier)
+    if app.config.get("BREVO_API_KEY"):
+        def send_guestbook_emails(sender_name, sender_email, sender_rating, sender_message, delete_link):
+            try:
+                stars_html = "".join(["★" if i < sender_rating else "☆" for i in range(5)])
 
-                    # 2. Notification to Sender
-                    if is_valid_email(email):
-                        stars_html = "".join(["★" if i < rating else "☆" for i in range(5)])
-                        sender_msg = Message(
-                            subject="Your Guestbook Message is Live! ✨",
-                            recipients=[email],
-                            body=f"Hi {name},\n\nYour message has been posted on the guestbook!\n\nMessage: {message}\nRating: {stars_html}\n\nIf you ever want to delete your message, use this link: {delete_link}\n\nThanks,\nTilak BV",
-                            html=f"""
-                            <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#0f1117;color:#fff;border-radius:12px;">
-                              <h2 style="color:#2ecc8f;">Your message is live, {name}! 🎉</h2>
-                              <p style="color:#ccc;line-height:1.7;">
-                                Thanks for stopping by and leaving a note on my portfolio guestbook.
-                              </p>
-                              <div style="background:#1a1d27;border-radius:8px;padding:16px;margin:20px 0;border-left:3px solid #2ecc8f;">
-                                <p style="color:#aaa;margin:0 0 6px;font-size:12px;">YOUR MESSAGE</p>
-                                <p style="margin:0;color:#eee;font-style:italic;">"{message}"</p>
-                                <p style="margin:10px 0 0 0;color:#ffd700;font-size:16px;">{stars_html}</p>
-                              </div>
-                              <p style="color:#ccc;line-height:1.7;margin-bottom:24px;">
-                                If you ever change your mind and want to remove this message, you can do so by clicking the button below:
-                              </p>
-                              <a href="{delete_link}" style="display:inline-block;padding:12px 24px;background:#ef4444;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;font-size:14px;">Delete My Message</a>
-                              <p style="color:#ccc;margin-top:30px;">Best regards,<br><strong style="color:#fff;">Tilak BV</strong></p>
-                              <div style="margin-top:24px;padding-top:16px;border-top:1px solid #222;font-size:12px;color:#555;">
-                                <a href="https://github.com/tilakchary05" style="color:#2ecc8f;margin-right:16px;">GitHub</a>
-                                <a href="https://linkedin.com/in/tilakatilaka" style="color:#2ecc8f;">LinkedIn</a>
-                              </div>
-                            </div>
-                            """
-                        )
-                        mail.send(sender_msg)
-                except Exception as e:
-                    app.logger.error(f"Failed to send guestbook email notification: {e}")
+                # 1. Notification to Owner
+                owner_html_body = f"""
+<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#0f1117;color:#fff;border-radius:12px;">
+  <div style="border-bottom:2px solid #2ecc8f;padding-bottom:16px;margin-bottom:24px;">
+    <h2 style="color:#2ecc8f;margin:0;">&#128221; New Guestbook Entry</h2>
+  </div>
+  <table style="width:100%;border-collapse:collapse;">
+    <tr><td style="padding:8px 0;color:#aaa;width:80px;">Name</td><td style="padding:8px 0;font-weight:bold;">{sender_name}</td></tr>
+    <tr><td style="padding:8px 0;color:#aaa;">Email</td><td style="padding:8px 0;"><a href="mailto:{sender_email}" style="color:#2ecc8f;">{sender_email}</a></td></tr>
+    <tr><td style="padding:8px 0;color:#aaa;">Rating</td><td style="padding:8px 0;color:#ffd700;">{stars_html}</td></tr>
+  </table>
+  <div style="background:#1a1d27;border-radius:8px;padding:16px;margin-top:20px;">
+    <p style="color:#aaa;margin:0 0 8px;font-size:12px;">MESSAGE</p>
+    <p style="margin:0;line-height:1.7;">{sender_message}</p>
+  </div>
+  <div style="margin-top:24px;">
+    <a href="{delete_link}" style="display:inline-block;padding:10px 20px;background:#ef4444;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;font-size:14px;">Delete This Message</a>
+  </div>
+  <p style="margin-top:20px;font-size:12px;color:#555;">Sent via <strong style="color:#2ecc8f;">Tilak BV Portfolio</strong></p>
+</div>
+"""
+                send_email_via_brevo(
+                    to_email=OWNER_EMAIL,
+                    to_name="Tilak BV",
+                    subject=f"New Guestbook Entry from {sender_name}",
+                    html_content=owner_html_body,
+                )
+
+                # 2. Confirmation to sender
+                if is_valid_email(sender_email):
+                    sender_html_body = f"""
+<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;background:#0f1117;color:#fff;border-radius:12px;">
+  <h2 style="color:#2ecc8f;">Your message is live, {sender_name}! &#127881;</h2>
+  <p style="color:#ccc;line-height:1.7;">Thanks for stopping by and leaving a note on my portfolio guestbook.</p>
+  <div style="background:#1a1d27;border-radius:8px;padding:16px;margin:20px 0;border-left:3px solid #2ecc8f;">
+    <p style="color:#aaa;margin:0 0 6px;font-size:12px;">YOUR MESSAGE</p>
+    <p style="margin:0;color:#eee;font-style:italic;">"{sender_message}"</p>
+    <p style="margin:10px 0 0 0;color:#ffd700;font-size:16px;">{stars_html}</p>
+  </div>
+  <p style="color:#ccc;line-height:1.7;margin-bottom:24px;">Want to remove your message? Click below:</p>
+  <a href="{delete_link}" style="display:inline-block;padding:12px 24px;background:#ef4444;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold;font-size:14px;">Delete My Message</a>
+  <p style="color:#ccc;margin-top:30px;">Best regards,<br><strong style="color:#fff;">Tilak BV</strong></p>
+  <div style="margin-top:24px;padding-top:16px;border-top:1px solid #222;font-size:12px;color:#555;">
+    <a href="https://github.com/Tilak2005-BV" style="color:#2ecc8f;margin-right:16px;">GitHub</a>
+    <a href="https://linkedin.com/in/tilakatilaka" style="color:#2ecc8f;">LinkedIn</a>
+  </div>
+</div>
+"""
+                    send_email_via_brevo(
+                        to_email=sender_email,
+                        to_name=sender_name,
+                        subject="Your Guestbook Message is Live! ✨",
+                        html_content=sender_html_body,
+                    )
+
+                app.logger.info(f"Brevo guestbook emails sent for {sender_name} <{sender_email}>")
+            except Exception as e:
+                app.logger.error(f"Brevo guestbook email error: {e}")
 
         delete_link = f"{request.host_url}guestbook/delete/{delete_token}"
-        threading.Thread(target=send_async_emails, args=(app, name, email, rating, message, delete_link)).start()
+        threading.Thread(
+            target=send_guestbook_emails,
+            args=(name, email, rating, message, delete_link),
+            daemon=True
+        ).start()
 
     safe_entry = {k: v for k, v in entry.items() if k not in ["delete_token", "email"]}
     return jsonify({"success": True, "entry": safe_entry}), 201
